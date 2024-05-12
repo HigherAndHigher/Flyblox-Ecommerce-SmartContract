@@ -118,6 +118,34 @@ contract MarketplacePayments is Ownable {
         return true;
     }
 
+    function markPending(uint256 orderId) public returns (bool) {
+        Order storage order = orders[orderId];
+        order.state = State.Pending;
+        order.completedAt = block.timestamp;
+
+        emit OrderCompleted(orderId, _msgSender());
+
+        return true;
+    }
+
+    function markReleased(uint256 orderId) public returns (State) {
+        Order storage order = orders[orderId];
+        order.state = State.Released;
+        order.completedAt = block.timestamp;
+
+        return State.Released;
+    }
+
+    function markReverted(uint256 orderId) public returns (bool) {
+        Order storage order = orders[orderId];
+        order.state = State.Reverted;
+        order.completedAt = block.timestamp;
+
+        emit OrderCompleted(orderId, _msgSender());
+
+        return true;
+    }
+
     function markCompleteAndreleaseFundsToSeller(
         uint256 orderId
     )

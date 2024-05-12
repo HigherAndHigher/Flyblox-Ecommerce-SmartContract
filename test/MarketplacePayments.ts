@@ -99,31 +99,31 @@ describe('MarketplacePayments', function () {
     await marketplacePayments.markCompleteAndReleaseFundsToSeller(1);
   });
 
-    it('claimFundsFromContract Test', async function () {
-      function delay(ms: number): Promise<void> {
-        return new Promise<void>((resolve) => setTimeout(resolve, ms));
-      }
-      await testerc20.mint(ethers.parseEther('10'));
+  it('claimFundsFromContract Test', async function () {
+    function delay(ms: number): Promise<void> {
+      return new Promise<void>((resolve) => setTimeout(resolve, ms));
+    }
+    await testerc20.mint(ethers.parseEther('10'));
 
-      await testerc20.approve(
-        await marketplacePayments.getAddress(),
-        ethers.parseEther('1')
-      );
-  
-      await marketplacePayments.updateTokensList(
-        await testerc20.getAddress(),
-        true
-      );
-      await marketplacePayments.createAndDeposit(
-        '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
-        Math.floor(Date.now()/1000) + 30,
-        1,
-        await testerc20.getAddress(),
-        ethers.parseEther('1')
-      );
-      // await marketplacePayments.disputeOrder(1)
-      await delay(1000);
-      await marketplacePayments.claimFundsFromContract(1);
+    await testerc20.approve(
+      await marketplacePayments.getAddress(),
+      ethers.parseEther('1')
+    );
+
+    await marketplacePayments.updateTokensList(
+      await testerc20.getAddress(),
+      true
+    );
+    await marketplacePayments.createAndDeposit(
+      '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
+      Math.floor(Date.now() / 1000) + 30,
+      1,
+      await testerc20.getAddress(),
+      ethers.parseEther('1')
+    );
+    // await marketplacePayments.disputeOrder(1)
+    await delay(1000);
+    await marketplacePayments.claimFundsFromContract(1);
   });
 
   it('refund Test', async function () {
@@ -142,7 +142,7 @@ describe('MarketplacePayments', function () {
     );
     await marketplacePayments.createAndDeposit(
       '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
-      Math.floor(Date.now()/1000) + 5000,
+      Math.floor(Date.now() / 1000) + 5000,
       5000,
       await testerc20.getAddress(),
       ethers.parseEther('1')
@@ -170,7 +170,7 @@ describe('MarketplacePayments', function () {
     );
     await marketplacePayments.createAndDeposit(
       '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
-      Math.floor(Date.now()/1000) + 5000,
+      Math.floor(Date.now() / 1000) + 5000,
       5000,
       await testerc20.getAddress(),
       ethers.parseEther('1')
@@ -178,7 +178,7 @@ describe('MarketplacePayments', function () {
     await delay(1000);
     // await marketplacePayments.disputeOrder(1)
     await marketplacePayments.sellerAcceptIncHoldingTime(1);
-});
+  });
 
   it('buyerIncHoldingTime Test', async function () {
     function delay(ms: number): Promise<void> {
@@ -197,7 +197,7 @@ describe('MarketplacePayments', function () {
     );
     await marketplacePayments.createAndDeposit(
       '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
-      Math.floor(Date.now()/1000) + 5000,
+      Math.floor(Date.now() / 1000) + 5000,
       5000,
       await testerc20.getAddress(),
       ethers.parseEther('1')
@@ -207,7 +207,7 @@ describe('MarketplacePayments', function () {
     await marketplacePayments.sellerAcceptIncHoldingTime(1);
     await delay(1000);
     await marketplacePayments.buyerIncHoldingTime(1, 8000);
-});
+  });
 
   // it('releaseFundsToBuyer function Test', async function () {
   //   await testerc20.mint(ethers.parseEther('10'));

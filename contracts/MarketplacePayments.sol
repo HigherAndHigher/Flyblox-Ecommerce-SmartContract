@@ -10,7 +10,8 @@ contract MarketplacePayments is Ownable {
         Pending,
         Completed,
         Released,
-        Reverted
+        Reverted,
+        Disputed
     }
 
     struct Order {
@@ -100,6 +101,11 @@ contract MarketplacePayments is Ownable {
     )
         public
         condition(
+            (orders[orderId].state != State.Disputed ||
+                _msgSender() == owner()),
+            "Error: Caller not seller/owner"
+        )
+        condition(
             (orders[orderId].buyer == _msgSender() || _msgSender() == owner()),
             "Error: Caller not buyer/owner"
         )
@@ -151,6 +157,11 @@ contract MarketplacePayments is Ownable {
     )
         public
         condition(
+            (orders[orderId].state != State.Disputed ||
+                _msgSender() == owner()),
+            "Error: Caller not seller/owner"
+        )
+        condition(
             (orders[orderId].buyer == _msgSender() || _msgSender() == owner()),
             "Error: Caller not buyer/owner"
         )
@@ -182,6 +193,11 @@ contract MarketplacePayments is Ownable {
     )
         public
         condition(
+            (orders[orderId].state != State.Disputed ||
+                _msgSender() == owner()),
+            "Error: Caller not seller/owner"
+        )
+        condition(
             (orders[orderId].seller == _msgSender() || _msgSender() == owner()),
             "Error: Caller not seller/owner"
         )
@@ -209,6 +225,11 @@ contract MarketplacePayments is Ownable {
     )
         public
         condition(
+            (orders[orderId].state != State.Disputed ||
+                _msgSender() == owner()),
+            "Error: Caller not seller/owner"
+        )
+        condition(
             (orders[orderId].seller == _msgSender() || _msgSender() == owner()),
             "Error: Caller not seller/owner"
         )
@@ -234,6 +255,23 @@ contract MarketplacePayments is Ownable {
             order.amount - feeValue
         );
         IBEP20(order.paymentToken).transfer(owner(), feeValue);
+    }
+
+    function disputeOrder(
+        uint256 orderId
+    )
+        public
+        condition(
+            (orders[orderId].dueDate > block.timestamp),
+            "Error: Cannot claim funds before dueDate"
+        )
+        condition(
+            (orders[orderId].state != State.Completed),
+            "Error: The order is completed."
+        )
+    {
+        Order storage order = orders[orderId];
+        order.state = State.Disputed;
     }
 
     function setTransactionFee(

@@ -169,10 +169,6 @@ contract MarketplacePayments is Ownable {
             orders[orderId].state == State.Pending,
             "Error: Invalid current state"
         )
-        condition(
-            (orders[orderId].dueDate <= block.timestamp),
-            "Error: Cannot release funds before dueDate"
-        )
     {
         Order storage order = orders[orderId];
         order.completedAt = block.timestamp;
@@ -202,7 +198,7 @@ contract MarketplacePayments is Ownable {
             "Error: Caller not seller/owner"
         )
         condition(
-            ((orders[orderId].state != State.Released) ||
+            ((orders[orderId].state != State.Released) &&
                 (orders[orderId].state != State.Reverted)),
             "Error: Invalid current state"
         )
@@ -235,7 +231,7 @@ contract MarketplacePayments is Ownable {
             "Error: Invalid current state"
         )
         condition(
-            (orders[orderId].dueDate <= block.timestamp),
+            ((orders[orderId].dueDate/1000) < block.timestamp),
             "Error: Cannot claim funds before dueDate"
         )
     {

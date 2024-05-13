@@ -116,7 +116,7 @@ describe('MarketplacePayments', function () {
       await testerc20.getAddress(),
       ethers.parseEther('1')
     );
-    await delay(1000);
+    await delay(3800);
     await marketplacePayments.markCompleteAndreleaseFundsToSeller(1);
   });
 
@@ -138,14 +138,11 @@ describe('MarketplacePayments', function () {
     );
     await marketplacePayments.createAndDeposit(
       '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
-      Math.floor(Date.now()/1000) + 310,
+      Math.floor(Date.now()/1000) + 31,
       await testerc20.getAddress(),
       ethers.parseEther('1')
     );
-    await delay(2000);
-    await marketplacePayments.disputeOrder(1);
     console.log(await marketplacePayments.orderDetails(1))
-    await delay(2000);
     await marketplacePayments.releaseFundsToBuyer(1);
     console.log(await marketplacePayments.orderDetails(1))
   });
@@ -167,12 +164,39 @@ describe('MarketplacePayments', function () {
     );
     await marketplacePayments.createAndDeposit(
       '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
-      Math.floor(Date.now()/1000) + 32,
+      Math.floor(Date.now()) + 20000,
       await testerc20.getAddress(),
       ethers.parseEther('1')
     );
-    await delay(38000);
+    await delay(35000);
+    console.log(await marketplacePayments.orderDetails(1));
     await marketplacePayments.claimFundsFromBuyer(1);
+  });
+
+  it('incHoldingTime Test', async function () {
+    function delay(ms: number): Promise<void> {
+      return new Promise<void>((resolve) => setTimeout(resolve, ms));
+    }
+    await testerc20.mint(ethers.parseEther('10'));
+
+    await testerc20.approve(
+      await marketplacePayments.getAddress(),
+      ethers.parseEther('1')
+    );
+
+    await marketplacePayments.updateTokensList(
+      await testerc20.getAddress(),
+      true
+    );
+    await marketplacePayments.createAndDeposit(
+      '0x48C281DB38eAD8050bBd821d195FaE85A235d8fc',
+      Math.floor(Date.now()/1000) + 2000,
+      await testerc20.getAddress(),
+      ethers.parseEther('1')
+    );
+    await delay(1000);
+    console.log(await marketplacePayments.orderDetails(1));
+    await marketplacePayments.incHoldingTime(1, 30000000);
     console.log(await marketplacePayments.orderDetails(1));
   });
 });

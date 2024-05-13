@@ -206,10 +206,6 @@ contract MarketplacePayments is Ownable {
                 (orders[orderId].state != State.Reverted)),
             "Error: Invalid current state"
         )
-        condition(
-            (orders[orderId].dueDate <= block.timestamp),
-            "Error: Cannot release funds before dueDate"
-        )
     {
         Order storage order = orders[orderId];
         order.releasedAt = block.timestamp;
@@ -257,13 +253,47 @@ contract MarketplacePayments is Ownable {
         IBEP20(order.paymentToken).transfer(owner(), feeValue);
     }
 
+    function incHoldingTime(
+        uint256 orderId,
+        uint256 _newHoldingTime
+    )
+        public
+        condition(
+            (orders[orderId].state != State.Disputed ||
+            _msgSender() == owner()),
+            "Error: Caller not seller/owner"
+        )
+        condition(
+            (orders[orderId].buyer == _msgSender() || _msgSender() == owner()),
+            "Error: Caller not buyer/owner"
+        )
+        condition(
+            (orders[orderId].state == State.Pending),
+            "Error: Invalid current state"
+        )
+        condition(
+            (orders[orderId].dueDate > block.timestamp),
+            "Error: Cannot release funds before dueDate"
+        )
+        condition(
+            (_newHoldingTime > 0)
+            && (_newHoldingTime <= 365 days),
+            "Error: Invalid holding time"
+        )
+        returns (bool)
+    {
+        Order storage order = orders[orderId];
+        order.dueDate += _newHoldingTime;
+        return true;
+    }
+
     function disputeOrder(
         uint256 orderId
     )
         public
         condition(
             (orders[orderId].dueDate > block.timestamp),
-            "Error: Cannot claim funds before dueDate"
+            "Error: Can not dispute after Duedate"
         )
         condition(
             (orders[orderId].state != State.Completed),

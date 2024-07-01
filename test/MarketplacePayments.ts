@@ -200,3 +200,5 @@ describe('MarketplacePayments', function () {
     console.log(await marketplacePayments.orderDetails(1));
   });
 });
+
+// Add extra testscripts here
